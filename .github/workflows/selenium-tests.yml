@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:   # ← allows manual trigger from GitHub UI (your "Live Demo" button)
+  workflow_dispatch:   # ← allows manual trigger from GitHub UI (your "Live Demo" butt
 
 jobs:
   selenium-tests:
