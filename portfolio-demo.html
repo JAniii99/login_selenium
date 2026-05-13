@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selenium Live Demo | Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a26;
+    --border: rgba(255,255,255,0.08);
+    --accent: #00ff9d;
+    --accent2: #7c6af7;
+    --text: #f0f0f8;
+    --muted: rgba(240,240,248,0.5);
+    --pass: #00ff9d;
+    --fail: #ff4f4f;
+    --warn: #ffcc44;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid noise background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,106,247,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,106,247,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Header ──────────────────────────────── */
+  header {
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,255,157,0.08);
+    border: 1px solid rgba(0,255,157,0.2);
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  .tag::before { content: '●'; font-size: 8px; animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  header h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.6) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.7;
+    max-width: 540px;
+    font-weight: 300;
+  }
+
+  /* ── Tech pills ───────────────────────────── */
+  .tech-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--surface);
+  }
+
+  /* ── Test scenarios section ───────────────── */
+  .section { padding: 40px 0; border-bottom: 1px solid var(--border); }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .test-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .test-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .test-card:hover {
+    border-color: rgba(255,255,255,0.15);
+    transform: translateY(-1px);
+  }
+
+  .tc-id {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    background: rgba(124,106,247,0.1);
+    border: 1px solid rgba(124,106,247,0.2);
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .tc-info h3 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+
+  .tc-info p {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .tc-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-pass {
+    background: rgba(0,255,157,0.1);
+    color: var(--pass);
+    border: 1px solid rgba(0,255,157,0.25);
+  }
+
+  .badge-expected-fail {
+    background: rgba(255,79,79,0.1);
+    color: var(--fail);
+    border: 1px solid rgba(255,79,79,0.25);
+  }
+
+  /* ── Live demo section ────────────────────── */
+  .demo-section { padding: 48px 0; }
+
+  .demo-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .demo-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .demo-header-left h2 {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .demo-header-left p {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .live-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--accent), #00d4a0);
+    color: #000;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 10px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    white-space: nowrap;
+  }
+
+  .live-btn:hover { opacity: 0.88; transform: scale(1.02); }
+  .live-btn:active { transform: scale(0.98); }
+
+  .live-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ── Terminal console ─────────────────────── */
+  .terminal {
+    background: #0d0d14;
+    padding: 20px 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    line-height: 1.9;
+    min-height: 200px;
+    position: relative;
+  }
+
+  .term-line { display: flex; gap: 12px; opacity: 0; animation: fadeIn 0.3s forwards; }
+  .term-time { color: rgba(255,255,255,0.2); flex-shrink: 0; }
+  .term-text { color: rgba(255,255,255,0.7); }
+  .term-pass { color: var(--pass); }
+  .term-fail { color: var(--fail); }
+  .term-info { color: var(--accent2); }
+  .term-warn { color: var(--warn); }
+
+  @keyframes fadeIn { to { opacity: 1; } }
+
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--accent);
+    animation: blink 1s steps(1) infinite;
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* ── Results summary ──────────────────────── */
+  .results-bar {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .result-stat { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-pass { background: var(--pass); box-shadow: 0 0 6px var(--pass); }
+  .dot-fail { background: var(--fail); }
+
+  .view-report-btn {
+    margin-left: auto;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    background: rgba(124,106,247,0.1);
+    border: 1px solid rgba(124,106,247,0.25);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .view-report-btn:hover { background: rgba(124,106,247,0.2); }
+
+  /* ── Code snippet ─────────────────────────── */
+  .code-section { padding: 40px 0; border-top: 1px solid var(--border); }
+
+  .code-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 8px 16px;
+    cursor: pointer;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .code-block {
+    background: #0d0d14;
+    border-radius: 0 0 12px 12px;
+    padding: 20px;
+    overflow-x: auto;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    display: none;
+  }
+
+  .code-block.active { display: block; }
+
+  .kw { color: #c678dd; }
+  .fn { color: #61afef; }
+  .str { color: #98c379; }
+  .cm { color: rgba(255,255,255,0.25); font-style: italic; }
+  .ann { color: #e5c07b; }
+  .var { color: #e06c75; }
+
+  /* ── GitHub guide section ─────────────────── */
+  .guide-section { padding: 40px 0 60px; }
+
+  .steps-list { display: grid; gap: 16px; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .step-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(124,106,247,0.15);
+    border: 1px solid rgba(124,106,247,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent2);
+    flex-shrink: 0;
+  }
+
+  .step-content h3 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+    margin-top: 8px;
+  }
+
+  .step-content p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .step-content code {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .inline-cmd {
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    overflow-x: auto;
+  }
+
+  .inline-cmd span { color: var(--muted); }
+
+  /* ── Footer ───────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 0;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  footer a { color: var(--accent2); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="tag">LIVE DEMO</div>
+    <h1>Selenium <span>Automation</span><br>Test Suite</h1>
+    <p>Login flow automation on OrangeHRM — demonstrating real-world QA skills with Selenium WebDriver, TestNG, and CI/CD via GitHub Actions.</p>
+    <div class="tech-pills">
+      <span class="pill">Java 11</span>
+      <span class="pill">Selenium 4</span>
+      <span class="pill">TestNG 7</span>
+      <span class="pill">Maven</span>
+      <span class="pill">GitHub Actions</span>
+      <span class="pill">ChromeDriver</span>
+    </div>
+  </header>
+
+  <!-- Test scenarios -->
+  <div class="section">
+    <div class="section-label">Test scenarios</div>
+    <div class="test-grid">
+
+      <div class="test-card">
+        <div class="tc-id">TC_001</div>
+        <div class="tc-info">
+          <h3>Valid Login</h3>
+          <p>Admin / admin123 → Dashboard redirect</p>
+        </div>
+        <div class="tc-badge badge-pass">PASS ✓</div>
+      </div>
+
+      <div class="test-card">
+        <div class="tc-id">TC_002</div>
+        <div class="tc-info">
+          <h3>Invalid Password</h3>
+          <p>Admin / wrongPassword@99 → Error alert assertion</p>
+        </div>
+        <div class="tc-badge badge-expected-fail">PASS ✓</div>
+      </div>
+
+      <div class="test-card">
+        <div class="tc-id">TC_003</div>
+        <div class="tc-info">
+          <h3>Empty Fields Validation</h3>
+          <p>No credentials → "Required" field error assertion</p>
+        </div>
+        <div class="tc-badge badge-pass">PASS ✓</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Live Demo Console -->
+  <div class="demo-section">
+    <div class="section-label">Live execution</div>
+    <div class="demo-box">
+
+      <div class="demo-header">
+        <div class="demo-header-left">
+          <h2>Maven TestNG Runner</h2>
+          <p>Executes headless Chrome on GitHub Actions CI</p>
+        </div>
+        <a class="live-btn" id="runBtn" href="https://github.com/YOUR_USERNAME/selenium-login-demo/actions" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="5,3 19,12 5,21"/>
+          </svg>
+          Run Live Demo
+        </a>
+      </div>
+
+      <div class="terminal" id="terminal">
+        <div class="term-line" style="animation-delay:0s">
+          <span class="term-time">00:00</span>
+          <span class="term-info">▶ mvn test -B (OrangeHRM Login Suite)</span>
+        </div>
+        <div class="term-line" style="animation-delay:0.4s">
+          <span class="term-time">00:01</span>
+          <span class="term-text">[INFO] Scanning for projects...</span>
+        </div>
+        <div class="term-line" style="animation-delay:0.9s">
+          <span class="term-time">00:02</span>
+          <span class="term-text">[INFO] WebDriverManager: Downloading ChromeDriver 121.0...</span>
+        </div>
+        <div class="term-line" style="animation-delay:1.5s">
+          <span class="term-time">00:03</span>
+          <span class="term-info">▶ TC_001: Valid Login Test</span>
+        </div>
+        <div class="term-line" style="animation-delay:2.2s">
+          <span class="term-time">00:04</span>
+          <span class="term-text">🌐 Navigated to OrangeHRM login page</span>
+        </div>
+        <div class="term-line" style="animation-delay:3.0s">
+          <span class="term-time">00:05</span>
+          <span class="term-text">✏️  Entered credentials: Admin / ****</span>
+        </div>
+        <div class="term-line" style="animation-delay:3.8s">
+          <span class="term-time">00:06</span>
+          <span class="term-text">🖱️  Clicked Login button</span>
+        </div>
+        <div class="term-line" style="animation-delay:4.8s">
+          <span class="term-time">00:07</span>
+          <span class="term-pass">✅ TC_001 PASSED — Dashboard displayed</span>
+        </div>
+        <div class="term-line" style="animation-delay:5.3s">
+          <span class="term-time">00:08</span>
+          <span class="term-info">▶ TC_002: Invalid Password Test</span>
+        </div>
+        <div class="term-line" style="animation-delay:6.1s">
+          <span class="term-time">00:09</span>
+          <span class="term-text">🔔 Error message: "Invalid credentials"</span>
+        </div>
+        <div class="term-line" style="animation-delay:7.0s">
+          <span class="term-time">00:10</span>
+          <span class="term-pass">✅ TC_002 PASSED — Error correctly asserted</span>
+        </div>
+        <div class="term-line" style="animation-delay:7.5s">
+          <span class="term-time">00:11</span>
+          <span class="term-info">▶ TC_003: Empty Fields Validation</span>
+        </div>
+        <div class="term-line" style="animation-delay:8.4s">
+          <span class="term-time">00:12</span>
+          <span class="term-text">🔔 Validation: "Required" message displayed</span>
+        </div>
+        <div class="term-line" style="animation-delay:9.2s">
+          <span class="term-time">00:13</span>
+          <span class="term-pass">✅ TC_003 PASSED — Validation correctly asserted</span>
+        </div>
+        <div class="term-line" style="animation-delay:10s">
+          <span class="term-time">00:14</span>
+          <span class="term-pass">═══════════════════════════════════════</span>
+        </div>
+        <div class="term-line" style="animation-delay:10.3s">
+          <span class="term-time">00:14</span>
+          <span class="term-pass">Tests run: 3, Failures: 0, Errors: 0, Skipped: 0</span>
+        </div>
+        <div class="term-line" style="animation-delay:10.6s">
+          <span class="term-time">00:14</span>
+          <span class="term-pass">[INFO] BUILD SUCCESS ✅</span>
+        </div>
+        <div class="term-line" style="animation-delay:11s">
+          <span class="term-time"></span>
+          <span class="term-text"><span class="cursor"></span></span>
+        </div>
+      </div>
+
+      <div class="results-bar">
+        <div class="result-stat">
+          <div class="dot dot-pass"></div>
+          <span style="font-family:'Space Mono',monospace;font-size:12px;color:var(--pass);">3 passed</span>
+        </div>
+        <div class="result-stat">
+          <div class="dot dot-fail"></div>
+          <span style="font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);">0 failed</span>
+        </div>
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">14s total</span>
+        <a class="view-report-btn" href="https://github.com/YOUR_USERNAME/selenium-login-demo/actions" target="_blank">
+          View Full Report →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Code snippet -->
+  <div class="code-section">
+    <div class="section-label">Source code</div>
+    <div class="code-tabs">
+      <button class="tab active" onclick="showTab('tc1', this)">TC_001 valid login</button>
+      <button class="tab" onclick="showTab('tc2', this)">TC_002 invalid</button>
+      <button class="tab" onclick="showTab('tc3', this)">TC_003 empty fields</button>
+    </div>
+
+    <div class="code-block active" id="tc1">
+<span class="ann">@Test</span>(priority = 1, description = <span class="str">"TC_001: Valid login → Dashboard"</span>)
+<span class="kw">public void</span> <span class="fn">testValidLogin</span>() {
+  <span class="fn">navigateToLoginPage</span>();
+  <span class="fn">fillLoginForm</span>(<span class="var">VALID_USERNAME</span>, <span class="var">VALID_PASSWORD</span>);
+  <span class="fn">clickLoginButton</span>();
+
+  <span class="cm">// Wait for Dashboard heading to appear</span>
+  WebElement dashboard = wait.<span class="fn">until</span>(
+    ExpectedConditions.<span class="fn">visibilityOfElementLocated</span>(
+      By.<span class="fn">xpath</span>(<span class="str">"//h6[contains(text(),'Dashboard')]"</span>)
+    )
+  );
+
+  Assert.<span class="fn">assertTrue</span>(dashboard.<span class="fn">isDisplayed</span>());
+  <span class="cm">// Verify URL left login page</span>
+  Assert.<span class="fn">assertFalse</span>(driver.<span class="fn">getCurrentUrl</span>().<span class="fn">contains</span>(<span class="str">"auth/login"</span>));
+}
+    </div>
+
+    <div class="code-block" id="tc2">
+<span class="ann">@Test</span>(priority = 2, description = <span class="str">"TC_002: Invalid password → error alert"</span>)
+<span class="kw">public void</span> <span class="fn">testInvalidPasswordLogin</span>() {
+  <span class="fn">navigateToLoginPage</span>();
+  <span class="fn">fillLoginForm</span>(<span class="var">VALID_USERNAME</span>, <span class="var">INVALID_PASSWORD</span>);
+  <span class="fn">clickLoginButton</span>();
+
+  <span class="cm">// Assert error alert is visible</span>
+  WebElement error = wait.<span class="fn">until</span>(
+    ExpectedConditions.<span class="fn">visibilityOfElementLocated</span>(
+      By.<span class="fn">cssSelector</span>(<span class="str">".oxd-alert-content-text"</span>)
+    )
+  );
+
+  Assert.<span class="fn">assertTrue</span>(error.<span class="fn">isDisplayed</span>());
+  Assert.<span class="fn">assertTrue</span>(error.<span class="fn">getText</span>().<span class="fn">contains</span>(<span class="str">"Invalid credentials"</span>));
+}
+    </div>
+
+    <div class="code-block" id="tc3">
+<span class="ann">@Test</span>(priority = 3, description = <span class="str">"TC_003: Empty fields → required validation"</span>)
+<span class="kw">public void</span> <span class="fn">testEmptyFieldsLogin</span>() {
+  <span class="fn">navigateToLoginPage</span>();
+
+  <span class="cm">// Submit without filling anything</span>
+  <span class="fn">clickLoginButton</span>();
+
+  <span class="cm">// Assert "Required" validation message</span>
+  WebElement required = wait.<span class="fn">until</span>(
+    ExpectedConditions.<span class="fn">visibilityOfElementLocated</span>(
+      By.<span class="fn">cssSelector</span>(<span class="str">".oxd-input-field-error-message"</span>)
+    )
+  );
+
+  Assert.<span class="fn">assertEquals</span>(required.<span class="fn">getText</span>(), <span class="str">"Required"</span>);
+}
+    </div>
+  </div>
+
+  <!-- GitHub Guide -->
+  <div class="guide-section">
+    <div class="section-label">How to host & showcase</div>
+
+    <div class="steps-list">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Create a GitHub repo</h3>
+          <p>Go to github.com → New repository → name it <code>selenium-login-demo</code> → make it Public.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Upload all project files</h3>
+          <p>Push the full Maven project. The structure must include <code>pom.xml</code>, <code>src/</code>, and <code>.github/workflows/</code>.</p>
+          <div class="inline-cmd">
+            <span>$</span> git init &amp;&amp; git add . &amp;&amp; git commit -m "Initial commit"<br>
+            <span>$</span> git remote add origin https://github.com/YOUR_USERNAME/selenium-login-demo.git<br>
+            <span>$</span> git push -u origin main
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>GitHub Actions runs automatically</h3>
+          <p>Every push triggers the workflow. Go to <code>Actions</code> tab on your repo — you'll see the tests running live with Chrome.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Add a "Run workflow" button (manual trigger)</h3>
+          <p>The <code>workflow_dispatch:</code> in the YAML enables a manual trigger. Visitors can click <strong>Run workflow</strong> directly from the Actions tab to see it execute live — perfect for demos.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h3>Add the status badge to README</h3>
+          <p>Copy the badge URL from <code>Actions → your workflow → ⋯ → Create status badge</code> and paste into README.md. It shows green/red live status.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <h3>Link from your portfolio</h3>
+          <p>Add a "Live Demo" button on your portfolio site pointing to the GitHub Actions URL. Recruiters can watch the tests run in real time — no local setup needed.</p>
+          <div class="inline-cmd">
+            https://github.com/YOUR_USERNAME/selenium-login-demo/actions
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <h3>Download test report artifact</h3>
+          <p>After each run, GitHub stores the TestNG HTML report as a downloadable artifact for 30 days. Share the direct artifact link as proof of results.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    Built with Selenium WebDriver · TestNG · GitHub Actions
+    &nbsp;|&nbsp; <a href="https://opensource-demo.orangehrmlive.com" target="_blank">Live test target ↗</a>
+  </footer>
+
+</div>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.code-block').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+
+</body>
+</html>
