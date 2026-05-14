@@ -14,7 +14,7 @@
 | TC_002 | Login with **invalid** password | ✅ Shows "Invalid credentials" alert |
 | TC_003 | Login with **empty** fields | ✅ Shows "Required" validation messages |
 
-**Live site under test:** https://opensource-demo.orangehrmlive.com/web/index.php/auth/login
+**Live site under tests:** https://opensource-demo.orangehrmlive.com/web/index.php/auth/login
 
 ---
 
@@ -22,7 +22,7 @@
 
 - **Java 11**
 - **Selenium WebDriver 4.18**
-- **TestNG 7.9** — test runner & assertions
+- **TestNG 7.9** — tests runner & assertions
 - **WebDriverManager** — auto ChromeDriver setup
 - **Maven** — build & dependency management
 - **GitHub Actions** — CI/CD & live demo runner
@@ -34,10 +34,10 @@
 ```
 selenium-login-demo/
 ├── src/
-│   └── test/
+│   └── tests/
 │       ├── java/
 │       │   └── tests/
-│       │       └── LoginTest.java        ← All test cases
+│       │       └── LoginTest.java        ← All tests cases
 │       └── resources/
 │           └── testng.xml               ← TestNG suite config
 ├── .github/
@@ -64,7 +64,7 @@ git clone https://github.com/YOUR_USERNAME/selenium-login-demo.git
 cd selenium-login-demo
 
 # 2. Run all tests
-mvn test
+mvn tests
 
 # 3. View report
 open target/surefire-reports/index.html
