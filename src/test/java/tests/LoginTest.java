@@ -111,26 +111,25 @@ public class LoginTest {
         fillLoginForm(VALID_USERNAME, VALID_PASSWORD);
         clickLoginButton();
 
-        // Wait for dashboard header to appear
-        WebElement dashboardHeader = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(
-                        By.xpath("//h6[contains(text(),'Dashboard')]")
-                )
-        );
+        // Step 1: Wait for URL to change away from login page (most reliable)
+        wait.until(ExpectedConditions.not(
+                ExpectedConditions.urlContains("auth/login")
+        ));
 
-        Assert.assertTrue(
-                dashboardHeader.isDisplayed(),
-                "❌ Dashboard not displayed after valid login!"
-        );
-
-        // Also verify URL changed away from login page
         String currentUrl = driver.getCurrentUrl();
+        Reporter.log("🔀 Redirected to: " + currentUrl, true);
+
         Assert.assertFalse(
                 currentUrl.contains("auth/login"),
                 "❌ Still on login page — login may have failed!"
         );
 
-        Reporter.log("✅ TC_001 PASSED — Dashboard displayed. URL: " + currentUrl, true);
+        // Step 2: Wait for top nav user dropdown — always present after login
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector(".oxd-userdropdown-tab")
+        ));
+
+        Reporter.log("✅ TC_001 PASSED — Logged in successfully. URL: " + currentUrl, true);
     }
 
     // ══════════════════════════════════════════════════════════════════════════
